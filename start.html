@@ -13,441 +13,37 @@
 
 <body>
   <canvas id="canv"></canvas>
+
+  <script src="/engine/Time.js"></script>
+  <script src="/engine/Collisions.js"></script>
+  <script src="/engine/Input.js"></script>
+  <script src="/engine/Scene.js"></script>
+
+  <script src="/game/MainScene.js"></script>
+  <script src="/game/DeathScene.js"></script>
+  <script src="/game/WinScene.js"></script>
+
   <script>
 
-    //Game Engine class
-    class Scene {
-      start() {
-
-      }
-      draw() {
-
-      }
-      update() {
-
-      }
-    }
-
-    //Game-specific classes
-    class MainScene extends Scene {
-      playerX
-      playerY
-      playerSpeed
-
-
-      circleX
-      circleY
-
-      circle2X
-      circle2Y
-
-      frames
-      elapsedTime
-
-      start() {
-        this.playerX = 125
-        this.playerY = 90
-        this.playerSpeed = 50
-
-        this.circleX = 100
-        this.circleY = 200
-
-        this.circle2X = 100
-        this.circle2Y = 250
-
-        this.frames = 0
-        this.elapsedTime = 0
-      }
-
-      update() {
-        //x++ //x+=1
-
-
-        this.frames++
-        this.elapsedTime += deltaTime
-
-        if (keysdown.includes("ArrowUp")) {
-          this.playerY -= this.playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowDown")) {
-          this.playerY += this.playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowLeft")) {
-          this.playerX -= this.playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowRight")) {
-          this.playerX += this.playerSpeed * deltaTime
-        }
-
-        if (this.playerX < 50) this.playerX = 50
-        if (this.playerX > 200) this.playerX = 200
-        if (this.playerY < 75) this.playerY = 75
-
-        this.circleX = 100 + 100 * Math.sin(this.elapsedTime)
-        this.circle2X = 100 + 100 * Math.sin(this.elapsedTime)
-
-
-        if (inCollission(this.playerX, this.playerY, 50, this.circleX, this.circleY, 20))
-          isDead = true
-
-        if (inCollission(this.playerX, this.playerY, 50, this.circle2X, this.circle2Y, 20))
-          isDead = true
-
-        if (this.playerY > 350)
-          isWon = true
-
-
-      }
-      draw() {
-
-        //Engine drawing code
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-
-        ctx.beginPath()
-        ctx.fillStyle = "green"
-        ctx.strokeStyle = "yellow"
-        ctx.lineWidth = 5
-        ctx.arc(this.playerX, this.playerY, 50, 0, Math.PI * 2)
-
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw circle code
-        ctx.beginPath()
-        ctx.fillStyle = "red"
-        ctx.strokeStyle = "pink"
-        ctx.lineWidth = 5
-        ctx.arc(this.circleX, this.circleY, 20, 0, 2 * Math.PI)
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw circle2 code
-        ctx.beginPath()
-        ctx.fillStyle = "red"
-        ctx.strokeStyle = "pink"
-        ctx.lineWidth = 5
-        ctx.arc(this.circle2X, this.circle2Y, 20, 0, 2 * Math.PI)
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw text
-        ctx.fillStyle = "black"
-        ctx.font = "30px Times New Roman"
-        let roundedTime = Math.floor(this.elapsedTime * 100) / 100
-        ctx.fillText("Score: " + roundedTime, 0, 20)
-
-      }
-    }
-
-    class DeathScene extends Scene {
-      //Variables for the dead scene
-      timeSinceDeath
-
-      start() {
-        this.timeSinceDeath = 0
-
-      }
-      update() {
-        this.timeSinceDeath += deltaTime
-        if (this.timeSinceDeath > 3) {
-          //Start main scene
-        }
-      }
-      draw() {
-
-        //Engine drawing code
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-
-
-        ctx.fillStyle = "black"
-        ctx.beginPath()
-        ctx.rect(0, 0, canvas.width, canvas.height)
-        ctx.fill()
-
-
-        //Draw text
-        ctx.fillStyle = "darkred"
-        ctx.font = "30px Times New Roman"
-        ctx.fillText("You are dead.", 0, 20)
-
-
-
-      }
-
-    }
-
-    class WinScene extends Scene {
-      //Variables for the win scene
-      timeSinceWin
-
-      start() {
-        this.timeSinceWin = 0
-
-      }
-      update() {
-        this.timeSinceWin += deltaTime
-        if (this.timeSinceWin > 3) {
-          //Start main scene
-        }
-
-      }
-      draw() {
-        //Engine drawing code
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-
-        ctx.fillStyle = "yellow"
-        ctx.beginPath()
-        ctx.rect(0, 0, canvas.width, canvas.height)
-        ctx.fill()
-
-
-        //Draw text
-        ctx.fillStyle = "darkgreen"
-        ctx.font = "30px Times New Roman"
-        ctx.fillText("You beat the game. Horray!", 0, 20)
-
-
-      }
-    }
-
-    // Game-specific state variables
-    let playerX
-    let playerY
-    let playerSpeed
-
-
-    let circleX
-    let circleY
-
-    let isDead
-
-    let isWon
-
-    let frames
-    let elapsedTime
 
     // Engine-specific state variables
     let canvas
     let ctx
 
-    // Game engine
-    function inCollission(x1, y1, r1, x2, y2, r2) {
-      let distance = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
-      return distance < r1 + r2
-    }
-
+    
     //Game loop (engine code)
     function tick() {
-      update()
-      draw()
-
+        currentScene.update()
+        currentScene.draw()
     }
 
-    /**
-     * Setup the state of the game (game specific)
-     * Unity: Start()
-     * Unreal: BeginPlay()
-     * Game Maker Studio: create
-     * Godot: _ready()
-    */
-    function start() {
-      playerX = 125
-      playerY = 90
-      playerSpeed = 50
-
-      circleX = 100
-      circleY = 200
-
-      circle2X = 100
-      circle2Y = 250
-
-      isDead = false
-
-      isWon = false
-
-      timeSinceDeath = 0
-
-      timeSinceWin = 0
-
-      frames = 0
-      elapsedTime = 0
-    }
-
-    /**
-     * Update the state of the game (game specific)
-     * Unity: Update() or FixedUpdate()
-     * Unreal: Tick()
-     * Game Maker Studio: step
-     * Godot: _process()
-     */
-    function update() {
-      //x++ //x+=1
-
-      if (!isDead && !isWon) {
-        frames++
-        elapsedTime += deltaTime
-
-        if (keysdown.includes("ArrowUp")) {
-          playerY -= playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowDown")) {
-          playerY += playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowLeft")) {
-          playerX -= playerSpeed * deltaTime
-        }
-        if (keysdown.includes("ArrowRight")) {
-          playerX += playerSpeed * deltaTime
-        }
-
-
-        if (playerX < 50) playerX = 50
-        if (playerX > 200) playerX = 200
-        if (playerY < 75) playerY = 75
-
-        circleX = 100 + 100 * Math.sin(elapsedTime)
-        circle2X = 100 + 100 * Math.sin(elapsedTime + 5)
-
-
-        if (inCollission(playerX, playerY, 50, circleX, circleY, 20))
-          isDead = true
-
-        if (inCollission(playerX, playerY, 50, circle2X, circle2Y, 20))
-          isDead = true
-
-        if (playerY > 350)
-          isWon = true
-      }
-      else {
-        if (isDead) {
-          timeSinceDeath += deltaTime
-          if (timeSinceDeath > 3) {
-            start()
-          }
-        }
-        else {
-          timeSinceWin += deltaTime
-          if (timeSinceWin > 3) {
-            start()
-          }
-        }
-      }
-
-    }
-
-    /**
-     * Draw the state of the game (game specific)
-     * Often handled by a game engine's IDE
-    */
-    function draw() {
-
-      //Engine drawing code
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      if (!isDead && !isWon) {
-
-
-        ctx.beginPath()
-        ctx.fillStyle = "green"
-        ctx.strokeStyle = "yellow"
-        ctx.lineWidth = 5
-        ctx.arc(playerX, playerY, 50, 0, Math.PI * 2)
-
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw circle code
-        ctx.beginPath()
-        ctx.fillStyle = "red"
-        ctx.strokeStyle = "pink"
-        ctx.lineWidth = 5
-        ctx.arc(circleX, circleY, 20, 0, 2 * Math.PI)
-
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw circle2 code
-        ctx.beginPath()
-        ctx.fillStyle = "red"
-        ctx.strokeStyle = "pink"
-        ctx.lineWidth = 5
-        ctx.arc(circle2X, circle2Y, 20, 0, 2 * Math.PI)
-
-        ctx.fill()
-        ctx.stroke()
-
-        //Draw text
-        ctx.fillStyle = "black"
-        ctx.font = "30px Times New Roman"
-        let roundedTime = Math.floor(elapsedTime * 100) / 100
-        ctx.fillText("Score: " + roundedTime, 0, 20)
-      }
-      else {
-        if (isDead) {
-          ctx.fillStyle = "black"
-          ctx.beginPath()
-          ctx.rect(0, 0, canvas.width, canvas.height)
-          ctx.fill()
-
-
-          //Draw text
-          ctx.fillStyle = "darkred"
-          ctx.font = "30px Times New Roman"
-          let roundedTime = Math.floor(elapsedTime * 100) / 100
-          ctx.fillText("You are dead.", 0, 20)
-        }
-        else {
-          ctx.fillStyle = "yellow"
-          ctx.beginPath()
-          ctx.rect(0, 0, canvas.width, canvas.height)
-          ctx.fill()
-
-
-          //Draw text
-          ctx.fillStyle = "darkgreen"
-          ctx.font = "30px Times New Roman"
-          let roundedTime = Math.floor(elapsedTime * 100) / 100
-          ctx.fillText("You beat the game. Horray!", 0, 20)
-        }
-      }
-
-    }
-
-    // Keyboard input management (engine code)
-    let keysdown = []
-
-    function keydown(event) {
-      if (!keysdown.includes(event.code))
-        keysdown.push(event.code)
-
-
-    }
-
-    function keyup(event) {
-      console.log(event.code)
-
-      let index = keysdown.indexOf(event.code)
-      keysdown.splice(index, 1)
-      //keysdown.push(event.code)
-    }
 
     /**
      * Setup the internals for the controller and view to run (engine code)
     */
     function setup() {
-      window.addEventListener("keydown", keydown)
-      window.addEventListener("keyup", keyup)
+      window.addEventListener("keydown", Input.keydown)
+      window.addEventListener("keyup", Input.keyup)
 
       canvas = document.getElementById("canv")
       ctx = canvas.getContext("2d")
@@ -456,12 +52,11 @@
     setup() //Setup the mechanics of the game (engine code)
 
 
-    start() //Setup the state of the game (game code)
+    let currentScene = new MainScene()
+    currentScene.start()
+    //start() //Setup the state of the game (game code)
 
-    let msBetweenFrames = 50
-    let fps = 1000 / msBetweenFrames
-    let deltaTime = msBetweenFrames / 1000
-    setInterval(tick, msBetweenFrames) //Start the game loop (engine code)
+    setInterval(tick, Time.msBetweenFrames) //Start the game loop (engine code)
 
   </script>
 </body>
